@@ -27,25 +27,35 @@ public class InventoryController {
     @PostMapping("/inventory")
     private int saveInventory(@RequestBody List<Inventory> inventory)
     {
-        logger.info("ID before: "+ inventory.get(0).getStoreId());
         inventoryService.saveOrUpdate( dataHelper.convertJsonObjToDomainObj(inventory));
-        logger.info("ID After: "+ inventory.get(0).getStoreId());
         return inventory.size();
     }
 
     @GetMapping("/inventory/{storeId}")
-    private InventoryDomain getInventoryByStoreId(@PathVariable("storeId") Integer storeId)
+    private Inventory getInventoryByStoreId(@PathVariable("storeId") Integer storeId)
     {
-        logger.info("ID : "+ storeId);
-        return inventoryService.getInventoryDomainByStoreId(storeId);
+        logger.info("Search for {} ",storeId);
+        InventoryDomain inventoryDomain = inventoryService.getInventoryDomainByStoreId(storeId);
+        List<InventoryDomain> inventoryDomainList = new ArrayList<>();
+        inventoryDomainList.add(inventoryDomain);
+       List<Inventory> inventoryList = dataHelper.convertDomainObjToJsonObj(inventoryDomainList);
+        return inventoryList.get(0);
     }
 
     @GetMapping("/allinventory")
     private List<Inventory> getAllInventory()
     {
-        List<Inventory> inventoryList = new ArrayList<>();
        List<InventoryDomain> inventoryDomainList = inventoryService.getAllInventory();
+        return dataHelper.convertDomainObjToJsonObj(inventoryDomainList);
+    }
 
-        return inventoryList;
+    @PutMapping("/inventory/{storeId}")
+    private void updateInventory(@RequestBody List<Inventory> inventory,@PathVariable("storeId") Integer storeId){
+        inventoryService.updateInventory(dataHelper.convertJsonObjToDomainObj(inventory),storeId);
+    }
+
+    @DeleteMapping("/inventory/{storeId}")
+    private void deleteInventory(@PathVariable("storeId") Integer storeId){
+        inventoryService.deleteInventory(storeId);
     }
 }

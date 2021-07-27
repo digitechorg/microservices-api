@@ -1,7 +1,6 @@
 package com.example.inventory.helper;
 
 import com.example.inventory.domain.*;
-import com.example.inventory.service.InventoryServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -57,4 +56,51 @@ public class DataHelper {
        logger.info(" end by  size" +inventoryDomainList.size());
         return inventoryDomainList;
     }
+
+
+    public List<Inventory> convertDomainObjToJsonObj(List<InventoryDomain> inventoryDomainList){
+       List<Inventory> inventoryList = new ArrayList<>();
+      Inventory inventory;
+       Sale sale;
+       Refund refund;
+       Delivery delivery;
+
+       for(InventoryDomain inventoryDomain: inventoryDomainList){
+           inventory = new Inventory();
+           List<Sale> saleList = new ArrayList<>();
+           List<Refund> refundList = new ArrayList<>();
+           List<Delivery> deliveryList = new ArrayList<>();
+
+           for(DeliveryDomain deliveryDomain: inventoryDomain.getDeliveryDomain()){
+               delivery = new Delivery();
+               delivery.setItemName(deliveryDomain.getItemName());
+               delivery.setItemId(deliveryDomain.getItemId());
+               delivery.setQuantity(deliveryDomain.getQuantity());
+               deliveryList.add(delivery);
+           }
+           for(RefundDomain refundDomain: inventoryDomain.getRefundDomain()){
+               refund = new Refund();
+               refund.setItemName(refundDomain.getItemName());
+               refund.setItemId(refundDomain.getItemId());
+               refund.setQuantity(refundDomain.getQuantity());
+               refundList.add(refund);
+           }
+           for(SaleDomain saleDomain: inventoryDomain.getSaleDomain()){
+               sale = new Sale();
+               sale.setItemName(saleDomain.getItemName());
+               sale.setItemId(saleDomain.getItemId());
+               sale.setQuantity(saleDomain.getQuantity());
+               saleList.add(sale);
+           }
+           inventory.setDelivery(deliveryList);
+           inventory.setRefund(refundList);
+           inventory.setSale(saleList);
+           inventory.setStoreId(inventoryDomain.getStoreId());
+           inventoryList.add(inventory);
+       }
+        logger.info(" end by  size" +inventoryDomainList.size());
+       return inventoryList;
+
+    }
+
 }
